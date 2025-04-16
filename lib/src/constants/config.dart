@@ -40,7 +40,7 @@ class AssetPickerConfig {
     this.assetsChangeRefreshPredicate,
     this.shouldAutoplayPreview = false,
     this.dragToSelect,
-    this.bottomTips,
+    this.languageMap,
   })  : assert(
           pickerTheme == null || themeColor == null,
           'pickerTheme and themeColor cannot be set at the same time.',
@@ -217,6 +217,9 @@ class AssetPickerConfig {
   /// {@endtemplate}
   final bool? dragToSelect;
 
-  /// 底部的提示文本
-  final String? bottomTips;
+  /// 最多选择的提示文本
+  /// 如果有 dialogContent，那么就会有弹框提示呵呵底部提示
+  /// dialogTitle 表示弹框的文本
+  /// dialogConfirm 表示确认的文本
+  final Map? languageMap;
 }

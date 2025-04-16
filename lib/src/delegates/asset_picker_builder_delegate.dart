@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -843,7 +844,7 @@ class DefaultAssetPickerBuilderDelegate
     this.keepScrollOffset = false,
     this.shouldAutoplayPreview = false,
     this.dragToSelect,
-    this.bottomTips,
+    this.languageMap,
   }) {
     // Add the listener if [keepScrollOffset] is true.
     if (keepScrollOffset) {
@@ -910,8 +911,8 @@ class DefaultAssetPickerBuilderDelegate
   /// {@macro wechat_assets_picker.constants.AssetPickerConfig.dragToSelect}
   final bool? dragToSelect;
 
-  /// 底部的提示文本
-  final String? bottomTips;
+  /// 从外部传入的多语言
+  final Map? languageMap;
 
   /// [Duration] when triggering path switching.
   /// 切换路径时的动画时长
@@ -936,7 +937,7 @@ class DefaultAssetPickerBuilderDelegate
   /// Whether the bottom actions bar should display.
   bool get hasBottomActions => isPreviewEnabled || !isSingleAssetMode;
 
-  bool get hasBottomTips => bottomTips != null;
+  bool get hasMaxSelectedTips => languageMap?['dialogContent'] != null;
 
   /// The listener to track the scroll position of the [gridScrollController]
   /// if [keepScrollOffset] is true.
@@ -966,6 +967,70 @@ class DefaultAssetPickerBuilderDelegate
     int index,
     bool selected,
   ) async {
+    final p = context.read<DefaultAssetPickerProvider>();
+    if (!selected &&
+        (p.selectedAssets.length + 1 > p.maxAssets && hasMaxSelectedTips)) {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+            child: CupertinoAlertDialog(
+              title: Text(
+                languageMap?['dialogTitle'] ?? '',
+                style: const TextStyle(
+                  color: Color(0xFF1F2124) /* modal-title */,
+                  fontSize: 20,
+                  fontFamily: 'PingFang SC',
+                  fontWeight: FontWeight.w600,
+                  height: 1.30,
+                ),
+              ),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  isDefaultAction: true,
+                  child: Text(
+                    languageMap?['dialogConfirm'] ?? '',
+                    style: TextStyle(
+                      color: themeColor,
+                      fontSize: 20,
+                      fontFamily: 'PingFang SC',
+                      fontWeight: FontWeight.w600,
+                      height: 1.30,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+                ),
+              ],
+              content: DefaultTextStyle(
+                style: const TextStyle(
+                  color: Color(0xFF000000),
+                  decoration: TextDecoration.none,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w300,
+                ),
+                child: Center(
+                  child: Text(
+                    languageMap?['dialogContent'] ?? '',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFF1F2124) /* modal-description */,
+                      fontSize: 16,
+                      fontFamily: 'PingFang SC',
+                      fontWeight: FontWeight.w400,
+                      height: 1.30,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+
+      return;
+    }
     final bool? selectPredicateResult = await selectPredicate?.call(
       context,
       asset,
@@ -2318,21 +2383,23 @@ class DefaultAssetPickerBuilderDelegate
 
   @override
   Widget itemBannedIndicator(BuildContext context, AssetEntity asset) {
-    return Consumer<DefaultAssetPickerProvider>(
-      builder: (_, DefaultAssetPickerProvider p, __) {
-        final bool isDisabled =
-            (!p.selectedAssets.contains(asset) && p.selectedMaximumAssets) ||
-                (isWeChatMoment &&
-                    asset.type == AssetType.video &&
-                    p.selectedAssets.isNotEmpty);
-        if (isDisabled) {
-          return Container(
-            color: theme.colorScheme.background.withOpacity(.85),
+    return hasMaxSelectedTips
+        ? const SizedBox.shrink()
+        : Consumer<DefaultAssetPickerProvider>(
+            builder: (_, DefaultAssetPickerProvider p, __) {
+              final bool isDisabled = (!p.selectedAssets.contains(asset) &&
+                      p.selectedMaximumAssets) ||
+                  (isWeChatMoment &&
+                      asset.type == AssetType.video &&
+                      p.selectedAssets.isNotEmpty);
+              if (isDisabled) {
+                return Container(
+                  color: theme.colorScheme.background.withOpacity(.85),
+                );
+              }
+              return const SizedBox.shrink();
+            },
           );
-        }
-        return const SizedBox.shrink();
-      },
-    );
   }
 
   @override
@@ -2544,7 +2611,27 @@ class DefaultAssetPickerBuilderDelegate
   Widget bottomActionBar(BuildContext context) {
     final children = <Widget>[
       if (isPermissionLimited) accessLimitedBottomTip(context),
-      if (hasBottomTips) Text(bottomTips!, style: context.textTheme.bodySmall),
+      if (hasMaxSelectedTips)
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 3),
+              child: Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.orange[400]!.withOpacity(.8),
+              ),
+            ),
+            ScaleText(
+              languageMap?['dialogContent']!,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: theme.textTheme.bodySmall?.color,
+                fontSize: 14,
+              ),
+              maxScaleFactor: 1.2,
+            ),
+          ],
+        ),
       if (hasBottomActions)
         Container(
           height: bottomActionBarHeight + context.bottomPadding,
