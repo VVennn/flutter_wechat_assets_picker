@@ -843,6 +843,7 @@ class DefaultAssetPickerBuilderDelegate
     this.keepScrollOffset = false,
     this.shouldAutoplayPreview = false,
     this.dragToSelect,
+    this.bottomTips,
   }) {
     // Add the listener if [keepScrollOffset] is true.
     if (keepScrollOffset) {
@@ -909,6 +910,9 @@ class DefaultAssetPickerBuilderDelegate
   /// {@macro wechat_assets_picker.constants.AssetPickerConfig.dragToSelect}
   final bool? dragToSelect;
 
+  /// 底部的提示文本
+  final String? bottomTips;
+
   /// [Duration] when triggering path switching.
   /// 切换路径时的动画时长
   Duration get switchingPathDuration => const Duration(milliseconds: 300);
@@ -931,6 +935,8 @@ class DefaultAssetPickerBuilderDelegate
 
   /// Whether the bottom actions bar should display.
   bool get hasBottomActions => isPreviewEnabled || !isSingleAssetMode;
+
+  bool get hasBottomTips => bottomTips != null;
 
   /// The listener to track the scroll position of the [gridScrollController]
   /// if [keepScrollOffset] is true.
@@ -2538,6 +2544,7 @@ class DefaultAssetPickerBuilderDelegate
   Widget bottomActionBar(BuildContext context) {
     final children = <Widget>[
       if (isPermissionLimited) accessLimitedBottomTip(context),
+      if (hasBottomTips) Text(bottomTips!, style: context.textTheme.bodySmall),
       if (hasBottomActions)
         Container(
           height: bottomActionBarHeight + context.bottomPadding,

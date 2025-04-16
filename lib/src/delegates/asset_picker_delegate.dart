@@ -120,6 +120,7 @@ class AssetPickerDelegate {
         locale: Localizations.maybeLocaleOf(context),
         shouldAutoplayPreview: pickerConfig.shouldAutoplayPreview,
         dragToSelect: pickerConfig.dragToSelect,
+        bottomTips: pickerConfig.bottomTips,
       ),
     );
     final List<AssetEntity>? result = await Navigator.maybeOf(

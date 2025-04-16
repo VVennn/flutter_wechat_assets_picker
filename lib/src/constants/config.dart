@@ -40,6 +40,7 @@ class AssetPickerConfig {
     this.assetsChangeRefreshPredicate,
     this.shouldAutoplayPreview = false,
     this.dragToSelect,
+    this.bottomTips,
   })  : assert(
           pickerTheme == null || themeColor == null,
           'pickerTheme and themeColor cannot be set at the same time.',
@@ -215,4 +216,7 @@ class AssetPickerConfig {
   /// 在未使用辅助功能的情况下会默认启用该功能。
   /// {@endtemplate}
   final bool? dragToSelect;
+
+  /// 底部的提示文本
+  final String? bottomTips;
 }
