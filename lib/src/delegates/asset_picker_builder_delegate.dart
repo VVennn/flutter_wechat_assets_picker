@@ -916,7 +916,7 @@ class DefaultAssetPickerBuilderDelegate
   final Map? languageMap;
 
   /// 点击确认的回调
-  final bool Function(List<AssetEntity>)? confirmBlock;
+  final Future<bool> Function(List<AssetEntity>)? confirmBlock;
 
   /// [Duration] when triggering path switching.
   /// 切换路径时的动画时长

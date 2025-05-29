@@ -225,5 +225,5 @@ class AssetPickerConfig {
   final Map? languageMap;
 
   /// 拦截点击确认的回调，外部需要调用pop方法
-  final bool Function(List<AssetEntity>)? confirmBlock;
+  final Future<bool> Function(List<AssetEntity>)? confirmBlock;
 }
