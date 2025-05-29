@@ -845,6 +845,7 @@ class DefaultAssetPickerBuilderDelegate
     this.shouldAutoplayPreview = false,
     this.dragToSelect,
     this.languageMap,
+    this.confirmBlock,
   }) {
     // Add the listener if [keepScrollOffset] is true.
     if (keepScrollOffset) {
@@ -913,6 +914,9 @@ class DefaultAssetPickerBuilderDelegate
 
   /// 从外部传入的多语言
   final Map? languageMap;
+
+  /// 点击确认的回调
+  final bool Function(List<AssetEntity>)? confirmBlock;
 
   /// [Duration] when triggering path switching.
   /// 切换路径时的动画时长
@@ -1905,7 +1909,11 @@ class DefaultAssetPickerBuilderDelegate
           ),
           onPressed: shouldAllowConfirm
               ? () {
-                  Navigator.maybeOf(context)?.maybePop(p.selectedAssets);
+                  if (confirmBlock != null) {
+                    confirmBlock?.call(p.selectedAssets);
+                  } else {
+                    Navigator.maybeOf(context)?.maybePop(p.selectedAssets);
+                  }
                 }
               : null,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

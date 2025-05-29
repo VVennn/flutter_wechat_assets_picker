@@ -41,6 +41,7 @@ class AssetPickerConfig {
     this.shouldAutoplayPreview = false,
     this.dragToSelect,
     this.languageMap,
+    this.confirmBlock,
   })  : assert(
           pickerTheme == null || themeColor == null,
           'pickerTheme and themeColor cannot be set at the same time.',
@@ -222,4 +223,7 @@ class AssetPickerConfig {
   /// dialogTitle 表示弹框的文本
   /// dialogConfirm 表示确认的文本
   final Map? languageMap;
+
+  /// 拦截点击确认的回调，外部需要调用pop方法
+  final bool Function(List<AssetEntity>)? confirmBlock;
 }
