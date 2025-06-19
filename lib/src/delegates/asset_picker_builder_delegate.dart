@@ -973,7 +973,8 @@ class DefaultAssetPickerBuilderDelegate
   ) async {
     final p = context.read<DefaultAssetPickerProvider>();
     if (!selected &&
-        (p.selectedAssets.length + 1 > p.maxAssets && hasMaxSelectedTips)) {
+        (p.selectedAssets.length + 1 > p.maxAssets && hasMaxSelectedTips) &&
+        !dragSelectCoordinator.dragging) {
       await showDialog(
         context: context,
         builder: (context) {
