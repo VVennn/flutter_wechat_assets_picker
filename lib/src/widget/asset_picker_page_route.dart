@@ -16,7 +16,9 @@ class AssetPickerPageRoute<T> extends PageRoute<T> {
   AssetPickerPageRoute({
     required this.builder,
     this.transitionCurve = Curves.easeIn,
-    this.transitionDuration = const Duration(milliseconds: 250),
+    /// 选择照片之后相册不会立马隐藏的问题处理
+    // this.transitionDuration = const Duration(milliseconds: 250),
+    this.transitionDuration = const Duration(milliseconds: 0),
     this.barrierColor,
     this.barrierDismissible = false,
     this.barrierLabel,
